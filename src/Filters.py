@@ -16,18 +16,6 @@ def filter_date(files, date, mode):
     return files
 
 # solo 2: vutha
-files = [
-    "D:\CS\CSA\book1.py",
-    "D:\CS\CSA\book2.py",
-    "D:\CS\CSA\book3.py",
-    "D:\CS\CSA\b.py",
-]
-wildcard = 'book*.py'
 def filter_wildcard(files, wildcard):
     ...
     return files
-files = [
-    "D:\CS\CSA\book1.py",
-    "D:\CS\CSA\book2.py",
-    "D:\CS\CSA\book3.py",
-]
