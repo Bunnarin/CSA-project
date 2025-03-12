@@ -13,6 +13,7 @@ filters = {
     'path': 'C:/Users/',
     'types': ['txt', 'pdf'],
     'size': (100, 'kb', 'lt/eq/gt'),
-    'date': ('2020-01-01-hh-mm', 'c/m/a', 'before/on/after'),
+    'date': ('yyyy-mm-dd', 'c/m/a', 'before/on/after'),
     'wildcard': 'hello*'
 }
+# c = creation, m = modified, a = access
