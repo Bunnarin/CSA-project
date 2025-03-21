@@ -1,59 +1,75 @@
 import os
 import datetime
-def get_all_files(path):
-    try:
-        files = []
-        for item in os.listdir(path):
-            # Skip hidden files and directories
-            if item.startswith('.'): continue
-            item_path = os.path.join(path, item)
-            if os.path.isfile(item_path): files.append(item_path)
-            else: files.extend(get_all_files(item_path))
-        return files
-    except Exception as e: return []
+class Filter:
+    def __init__(self, filters):
+        self.files = self.get_all_files(filters["path"])
+        if filters["types"]: self.files = self.filter_types(self.files,filters["types"])
+        if filters["size"]: self.files = self.filter_size(self.files,filters["size"])
+        if filters["date"]: self.files = self.filter_date(self.files,filters["date"])
+        if filters["wildcard"]: self.files = self.filter_wildcard(self.files,filters["wildcard"])
 
-def filter_types(files, types):
-    result_files = []
-    for file in files:
-        _, extension = os.path.splitext(file)
-        if extension in types: result_files.append(file)
-    return result_files
+    def get_result(self): return self.files
 
-def filter_size(files, size, unit, mode):
-    # convert to the correct unit
-    if unit == "kb": size *= 1024
-    elif unit == "mb": size *= 1024 * 1024
-    elif unit == "gb": size *= 1024 * 1024 * 1024
+    def get_all_files(self, path):
+        try:
+            files = []
+            for item in os.listdir(path):
+                # Skip hidden files and directories
+                if item.startswith('.'): continue
+                item_path = os.path.join(path, item)
+                if os.path.isfile(item_path): files.append(item_path)
+                else: files.extend(self.get_all_files(item_path))
+            return files
+        except Exception as e: return []
 
-    # filter the files
-    if mode == "ls": files = [file for file in files if os.path.getsize(file) < size]
-    elif mode == "gt": files = [file for file in files if os.path.getsize(file) > size]
-    elif mode == "eq": files = [file for file in files if os.path.getsize(file) == size]
-    return files
+    def filter_types(self, files, types):
+        result_files = []
+        for file in files:
+            _, extension = os.path.splitext(file)
+            if extension in types: result_files.append(file)
+        return result_files
 
-def filter_date(files, target_date_str, type, mode):
-    target_date = datetime.datetime.strptime(target_date_str, "%Y-%m-%d").date()
-    result_files = []
-    for file in files:
-        # get the date in yy-mm-dd format
-        if type == "created": file_date = os.path.getctime(file)
-        elif type == "modified": file_date = os.path.getmtime(file)
-        elif type == "accessed": file_date = os.path.getatime(file)
-        file_date = datetime.datetime.fromtimestamp(file_date).date()
+    def filter_size(self, files, params):
+        size, unit, mode = params
+        # convert to the correct unit
+        if unit == "kb": size *= 1024
+        elif unit == "mb": size *= 1024 * 1024
+        elif unit == "gb": size *= 1024 * 1024 * 1024
+
         # filter the files
-        if mode == "before" and file_date < target_date: result_files.append(file)
-        elif mode == "after" and file_date > target_date: result_files.append(file)
-        elif mode == "on" and file_date == target_date: result_files.append(file)
-    return result_files
+        if mode == "lt": return [file for file in files if os.path.getsize(file) < size]
+        elif mode == "gt": return [file for file in files if os.path.getsize(file) > size]
+        elif mode == "eq": return [file for file in files if os.path.getsize(file) == size]
 
-# in progress
-def filter_wildcard(files, wildcard):
-    pass
-    return files
+    def filter_date(self, files, params):
+        target_date_str, type, mode = params
+        target_date = datetime.datetime.strptime(target_date_str, "%Y-%m-%d").date()
+        result_files = []
+        for file in files:
+            # get the date in yy-mm-dd format
+            if type == "c": file_date = os.path.getctime(file)
+            elif type == "m": file_date = os.path.getmtime(file)
+            elif type == "a": file_date = os.path.getatime(file)
+            file_date = datetime.datetime.fromtimestamp(file_date).date()
+            # filter the files
+            if mode == "before" and file_date < target_date: result_files.append(file)
+            elif mode == "after" and file_date > target_date: result_files.append(file)
+            elif mode == "on" and file_date == target_date: result_files.append(file)
+        return result_files
 
-# test the code here
-# files = get_all_files(".")
-# print(files)
-# print(filter_types(files, [".txt"]))
-# print(filter_size(files, 1, "kb", "gt"))
-# print(filter_date(files, "2025-03-12", "created", "on"))
+    # in progress
+    def filter_wildcard(self, files, wildcard):
+        pass
+        return files
+
+# test
+filters = {
+    'path': '.',
+    'types': [".py"],
+    'size': (100, 'kb', 'lt'),
+    'date': ('2025-01-01','c','after'),
+    'wildcard': None
+}
+filter = Filter(filters)
+files = filter.get_result()
+print(files)
