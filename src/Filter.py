@@ -1,14 +1,15 @@
 import os
 import datetime
 class Filter:
-    def __init__(self, filters):
-        self.files = self.get_all_files(filters["path"])
-        if filters["types"]: self.files = self.filter_types(self.files,filters["types"])
-        if filters["size"]: self.files = self.filter_size(self.files,filters["size"])
-        if filters["date"]: self.files = self.filter_date(self.files,filters["date"])
-        if filters["wildcard"]: self.files = self.filter_wildcard(self.files,filters["wildcard"])
+    def __init__(self): pass
 
-    def get_result(self): return self.files
+    def get_result(self, filters): 
+        files = self.get_all_files(filters["path"])
+        if filters["types"]: files = self.filter_types(files,filters["types"])
+        if filters["size"]: files = self.filter_size(files,filters["size"])
+        if filters["date"]: files = self.filter_date(files,filters["date"])
+        if filters["wildcard"]: files = self.filter_wildcard(files,filters["wildcard"])
+        return files
 
     def get_all_files(self, path):
         try:
@@ -62,14 +63,14 @@ class Filter:
         pass
         return files
 
-# test
-filters = {
-    'path': '.',
-    'types': [".py"],
-    'size': (100, 'kb', 'lt'),
-    'date': ('2025-01-01','c','after'),
-    'wildcard': None
-}
-filter = Filter(filters)
-files = filter.get_result()
-print(files)
+# test here
+# filters = {
+#     'path': '.',
+#     'types': [".py"],
+#     'size': (100, 'kb', 'lt'),
+#     'date': ('2025-01-01','c','after'),
+#     'wildcard': None
+# }
+# filter = Filter(filters)
+# files = filter.get_result()
+# print(files)

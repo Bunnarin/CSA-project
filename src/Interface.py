@@ -28,7 +28,7 @@ class Interface:
         actions = {}
         return actions
 # example result:
-actions = {
-    'type': 'copy/move/delete/find_replace',
-    'params': 'path/None/(find, replace)'
-}
+# actions = {
+#     'type': 'copy/move/delete/find_replace',
+#     'params': 'path/None/(find, replace)'
+# }
